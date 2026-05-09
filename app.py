@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from flask import Flask, request
 from flask import jsonify
 import pymongo
+from flask_cors import CORS
 from google import genai
 from sentence_transformers import SentenceTransformer
 
@@ -11,6 +12,7 @@ gemini_api_key = os.getenv("GEMINI_API_KEY")
 db_url = os.getenv("DB_URL")
 
 app = Flask(__name__)
+CORS(app)
 
 
 model = SentenceTransformer('intfloat/multilingual-e5-small')
@@ -48,12 +50,14 @@ def gemini_response(query, results_list):
 def text():
     data = request.get_json()
     print(data)
-    return data["name"]
+    return jsonify(data["name"])
 
 
 
-@app.route("/hybrid/<ask>")
-def hybrid(ask):
+@app.route("/hybrid", methods=['POST'])
+def hybrid():
+    query = request.get_json()
+    ask = query["question"]
     query_text = ask
     query_vector = model.encode(f"{ask}").tolist()
 
