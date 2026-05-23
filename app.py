@@ -42,7 +42,6 @@ def gemini_response(query, results_list):
     """
 
     response = chat.send_message(prompt)
-    print(response.text)
     return response.text
 
 
